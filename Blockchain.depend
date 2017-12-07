@@ -1,0 +1,36 @@
+# depslib dependency file v1.0
+1512592894 source:c:\users\gabos\desktop\blockchain\main.cpp
+	<iostream>
+	<stack>
+	<string>
+	<stdio.h>
+	<time.h>
+	<unordered_map>
+	<fstream>
+	"block.h"
+	"wallet.h"
+	"login.h"
+
+1511638727 c:\users\gabos\desktop\blockchain\hasha.h
+	<iostream>
+	<sstream>
+	<bitset>
+	<vector>
+	<iomanip>
+	<cstring>
+
+1512592528 c:\users\gabos\desktop\blockchain\block.h
+	<iostream>
+	<stack>
+	<string>
+	<stdio.h>
+	<time.h>
+	<vector>
+	"hasha.h"
+	"wallet.h"
+
+1512589110 c:\users\gabos\desktop\blockchain\wallet.h
+	"block.h"
+
+1512590678 c:\users\gabos\desktop\blockchain\login.h
+
