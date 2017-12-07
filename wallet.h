@@ -16,7 +16,8 @@ public:
         string from;
         string to;
         double svota;
-        char operacija;
+        time_t timestamp;
+        struct tm *ptm;
 };
 
 std::unordered_map<string,Wallets> new_wallet(string username,std::unordered_map<string,Wallets> &map_wallets);
@@ -38,22 +39,11 @@ std::unordered_map<string,Wallets> new_wallet(string username,std::unordered_map
     return map_wallets;
 }
 
-std::unordered_map<string,Wallets> izmjena_wallet(std::unordered_map<string,Wallets> &map_wallets, string ime, string ime_a, double novac, char operacija)
+std::unordered_map<string,Wallets> izmjena_wallet(std::unordered_map<string,Wallets> &map_wallets, string ime, string ime_a, double novac )
 {
-    if(operacija=='+')
-    {
-        map_wallets[ime_a].balance+=novac;
-        map_wallets[ime].balance-=novac;
-    }
-    else if(operacija=='-')
-    {
-        map_wallets[ime_a].balance-=novac;
-        map_wallets[ime].balance+=novac;
-    }
-    else
-    {
-        cout <<"Kriva operacija!" <<endl;
-    }
+    map_wallets[ime_a].balance+=novac;
+    map_wallets[ime].balance-=novac;
+
     return map_wallets;
 }
 

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1512592894 source:c:\users\gabos\desktop\blockchain\main.cpp
+1512668006 source:c:\users\gabos\desktop\blockchain\main.cpp
 	<iostream>
 	<stack>
 	<string>
@@ -19,7 +19,7 @@
 	<iomanip>
 	<cstring>
 
-1512592528 c:\users\gabos\desktop\blockchain\block.h
+1512668045 c:\users\gabos\desktop\blockchain\block.h
 	<iostream>
 	<stack>
 	<string>
@@ -29,8 +29,8 @@
 	"hasha.h"
 	"wallet.h"
 
-1512589110 c:\users\gabos\desktop\blockchain\wallet.h
+1512667928 c:\users\gabos\desktop\blockchain\wallet.h
 	"block.h"
 
-1512590678 c:\users\gabos\desktop\blockchain\login.h
+1512667425 c:\users\gabos\desktop\blockchain\login.h
 

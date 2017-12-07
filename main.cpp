@@ -1,6 +1,5 @@
 //hash popraviti
 // id napraviti
-//datoteke
 
 #include <iostream>
 #include <stack>
@@ -24,7 +23,6 @@ int main()
     vrh->veza=NULL;
     vrh->next=NULL;
     vrh->r_br=0;
-
 
     bool provjera=true;
 
@@ -80,7 +78,10 @@ int main()
     cout <<"ISPIS TRANSAKCIJA"<<endl;
     for(int i=0; i<vrh->transaction_vec.size(); i++)
     {
-        std::cout <<"From " <<vrh->transaction_vec[i].from<<" to "<<vrh->transaction_vec[i].to<<" "<<vrh->transaction_vec[i].operacija<<" "<<vrh->transaction_vec[i].svota<<endl;
+        vrh->transaction_vec[i].ptm=localtime(&(vrh->transaction_vec[i].timestamp));
+        cout <<"Vrijeme: " << vrh->transaction_vec[i].ptm->tm_hour << ":" << vrh->transaction_vec[i].ptm->tm_min<< ":" << vrh->transaction_vec[i].ptm->tm_sec;
+        cout << "\tDatum: " << (vrh->transaction_vec[i].ptm->tm_year+1900) << "-" << (vrh->transaction_vec[i].ptm->tm_mon+1) << "-" << vrh->transaction_vec[i].ptm->tm_mday<<"\t";
+        std::cout <<"From " <<vrh->transaction_vec[i].from<<" to "<<vrh->transaction_vec[i].to<<" + "<<vrh->transaction_vec[i].svota<<endl;
     }
 
     /*

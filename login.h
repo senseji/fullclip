@@ -4,6 +4,8 @@
 std::unordered_map<string,Wallets> new_account(std::unordered_map<string,Wallets> &map_wallets);
 void login(block* &vrh,std::unordered_map<string,Wallets> &map_wallets);
 
+static int brojac_vec=0;
+
 std::unordered_map<string,Wallets> new_account(std::unordered_map<string,Wallets> &map_wallets)
 {
     bool pro_user;
@@ -75,7 +77,6 @@ void login(block* &vrh, std::unordered_map<string,Wallets> &map_wallets)
     }while(pro_login==false);
     provjera_logina.close();
 
-    int brojac_vec=0;//samo za hash al treba srediti
     char n;
     do
     {

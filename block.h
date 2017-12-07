@@ -77,7 +77,7 @@ void ispis(block *vrh)
         return ispis(vrh->veza);
     }
 }
-
+/*
 void promjena_bloka(block *vrh, bool provjera)
 {
     int a;
@@ -111,13 +111,13 @@ void promjena_bloka(block *vrh, bool provjera)
         }
         tmp1=tmp1->veza;
     }
-}
-
+}*/
+/*
 void fun_nonce(block *vrh)
 {
     block *tmp=new block;
     tmp=vrh;
-    tmp->hash_podatka=hashing(/*tmp->podatak+*/tmp->prev_hash_podatka+char(tmp->nonce)+char(tmp->timestamp));
+    tmp->hash_podatka=hashing(tmp->prev_hash_podatka+char(tmp->nonce)+char(tmp->timestamp));
     char n_hash[tmp->hash_podatka.length()+1];
     strncpy(n_hash, tmp->hash_podatka.c_str(),sizeof(n_hash));
 
@@ -125,21 +125,47 @@ void fun_nonce(block *vrh)
     while(n_hash[0]!='0' || n_hash[1]!='0' || n_hash[2]!='0' || n_hash[3]!='0')
     {
         tmp->nonce++;
-        tmp->hash_podatka=hashing(/*tmp->podatak+*/tmp->prev_hash_podatka+char(tmp->nonce));
+        tmp->hash_podatka=hashing(tmp->prev_hash_podatka+char(tmp->nonce));
         strncpy(n_hash, tmp->hash_podatka.c_str(),sizeof(n_hash));
     }
-}
+}*/
 
 void fun_transaction(block* &vrh, std::unordered_map<string,Wallets> &map_wallets,string username, int i)
 {
     Transactions transaction;
     string hash_vec_podatka;
 
+    bool pro_login=false;
+    string provjera_za_username;
+
     transaction.from=username;
 
-    cout <<"S kim zelite razmjeniti novac, koliko i kako(+ ili -): "<<endl;
-    cin >> transaction.to >> transaction.svota>>transaction.operacija;
+    cout <<"S kim zelite razmjeniti novac "<<endl;
 
+    ifstream provjera_logina;
+    provjera_logina.open("account.txt");
+
+    do
+    {
+        cin >> transaction.to;
+        provjera_logina.clear();
+        provjera_logina.seekg(0, ios::beg);
+
+        while(!provjera_logina.eof() && pro_login==false)
+        {
+            provjera_logina>>provjera_za_username;
+            if(provjera_za_username==transaction.to)
+            {
+                pro_login=true;
+            }
+            else{pro_login=false;}
+        }
+        if(pro_login==false){cout <<"Ne postoji taj username. Unesi ponovno!!!!"<<endl;}
+    }while(pro_login==false);
+    provjera_logina.close();
+    cout << "Koliko: "<<endl;
+    cin >> transaction.svota;
+    transaction.timestamp=time(0);
     vrh->transaction_vec.emplace(vrh->transaction_vec.end(),transaction);
 
     std::stringstream ss;
@@ -151,10 +177,11 @@ void fun_transaction(block* &vrh, std::unordered_map<string,Wallets> &map_wallet
     }
     std::string s = ss.str();
 
-    hash_vec_podatka=hashing(vrh->transaction_vec[i].from+vrh->transaction_vec[i].operacija+vrh->transaction_vec[i].to+s);
+    hash_vec_podatka=hashing(vrh->transaction_vec[i].from+vrh->transaction_vec[i].to+s/*+timestamp*/);
+
     vrh->hash_podatka=hashing(hash_vec_podatka+vrh->hash_podatka+vrh->prev_hash_podatka+char(vrh->nonce)+char(vrh->timestamp));
 
-    izmjena_wallet(map_wallets,transaction.from, transaction.to, transaction.svota, transaction.operacija);
+    izmjena_wallet(map_wallets,transaction.from, transaction.to, transaction.svota);
 
     ispis_wallet(map_wallets);
 }
