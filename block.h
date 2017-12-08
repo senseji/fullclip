@@ -27,12 +27,22 @@ public:
     block *next;
 };
 
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
+
 void ispis(block *vrh);
 void promjena_bloka(block *vrh, bool provjera);
 block* new_block(block* &vrh, bool provjera, std::stack<block> mystack);
 void fun_nonce(block *vrh);
 void fun_transaction(block* & vrh, std::unordered_map<string,Wallets> &map_wallets, string username, int i);
-
+void ispis_transakcija(block *vrh);
 
 block* new_block(block* &vrh, bool provjera, std::stack<block> mystack)
 {
@@ -67,13 +77,12 @@ void ispis(block *vrh)
     {
         vrh->ptm=localtime(&(vrh->timestamp));
         cout <<"\nRedni broj bloka: " << vrh->r_br << endl;
-        //cout <<"Podatak bloka: " << vrh->podatak << endl;
         cout <<"Hash bloka: " << vrh->hash_podatka << endl;
         cout <<"Prošli hash: " << vrh->prev_hash_podatka <<endl;
         cout <<"Vrijeme bloka: " << vrh->ptm->tm_hour << ":" << vrh->ptm->tm_min<< ":" << vrh->ptm->tm_sec << endl;
         cout <<"Datum: " << (vrh->ptm->tm_year+1900) << "-" << (vrh->ptm->tm_mon+1) << "-" << vrh->ptm->tm_mday << endl;
         cout <<"Nonce: " << vrh->nonce <<endl;
-        //vrh=vrh->veza;
+
         return ispis(vrh->veza);
     }
 }
@@ -130,10 +139,9 @@ void fun_nonce(block *vrh)
     }
 }*/
 
-void fun_transaction(block* &vrh, std::unordered_map<string,Wallets> &map_wallets,string username, int i)
+void fun_transaction(block* &vrh, std::unordered_map<string,Wallets> &map_wallets,string username)
 {
     Transactions transaction;
-    string hash_vec_podatka;
 
     bool pro_login=false;
     string provjera_za_username;
@@ -163,26 +171,34 @@ void fun_transaction(block* &vrh, std::unordered_map<string,Wallets> &map_wallet
         if(pro_login==false){cout <<"Ne postoji taj username. Unesi ponovno!!!!"<<endl;}
     }while(pro_login==false);
     provjera_logina.close();
+
     cout << "Koliko: "<<endl;
     cin >> transaction.svota;
     transaction.timestamp=time(0);
+
+    transaction.hash_transaction=hashing(transaction.from+transaction.to+patch::to_string(transaction.svota)+patch::to_string(transaction.timestamp));
+
     vrh->transaction_vec.emplace(vrh->transaction_vec.end(),transaction);
 
-    std::stringstream ss;
-    for(size_t i = 0; i < vrh->transaction_vec.size(); ++i)
+    vrh->timestamp=time(0);
+
+    vrh->hash_podatka=hashing(vrh->hash_podatka+transaction.hash_transaction+vrh->prev_hash_podatka+patch::to_string(vrh->nonce)+patch::to_string(vrh->timestamp));
+
+    //izmjena_wallet(map_wallets,transaction.from, transaction.to, transaction.svota);
+
+    //ispis_wallet(map_wallets);
+}
+
+void ispis_transakcija(block* vrh)
+{
+    cout <<"\nISPIS TRANSAKCIJA"<<endl;
+    for(int i=0; i<vrh->transaction_vec.size(); i++)
     {
-        if(i != 0)
-            ss << ",";
-        ss << vrh->transaction_vec[i].svota;
+        vrh->transaction_vec[i].ptm=localtime(&(vrh->transaction_vec[i].timestamp));
+        cout <<"Vrijeme: " << vrh->transaction_vec[i].ptm->tm_hour << ":" << vrh->transaction_vec[i].ptm->tm_min<< ":" << vrh->transaction_vec[i].ptm->tm_sec;
+        cout << "\tDatum: " << (vrh->transaction_vec[i].ptm->tm_year+1900) << "-" << (vrh->transaction_vec[i].ptm->tm_mon+1) << "-" << vrh->transaction_vec[i].ptm->tm_mday<<"\t";
+        std::cout <<"From " <<vrh->transaction_vec[i].from<<" to "<<vrh->transaction_vec[i].to<<" + "<<vrh->transaction_vec[i].svota;
+        cout <<"\tHash transakcije: "<<vrh->transaction_vec[i].hash_transaction<<endl;
     }
-    std::string s = ss.str();
-
-    hash_vec_podatka=hashing(vrh->transaction_vec[i].from+vrh->transaction_vec[i].to+s/*+timestamp*/);
-
-    vrh->hash_podatka=hashing(hash_vec_podatka+vrh->hash_podatka+vrh->prev_hash_podatka+char(vrh->nonce)+char(vrh->timestamp));
-
-    izmjena_wallet(map_wallets,transaction.from, transaction.to, transaction.svota);
-
-    ispis_wallet(map_wallets);
 }
 #endif // BLOCK_H_INCLUDED

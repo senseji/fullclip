@@ -1,4 +1,3 @@
-//hash popraviti
 // id napraviti
 
 #include <iostream>
@@ -30,70 +29,94 @@ int main()
 
     char n;
     int acc_log;
+    string username;
 
-    cout <<"Za novi account unesi 1, za login unesi 2: "<<endl;
-    cin >> acc_log;
     do
     {
+    cout <<"\n1--Novi account\n2--Login\n3--Azuriranje walleta\n4--Ispis walleta\n5--Ispis mojih transakcija\n6--Ispis bloka\n7--Ispis svih transakcija\n8--EXIT\n"<<endl;
+    cin >> acc_log;
         switch(acc_log)
         {
             case 1:
+            {
+                do
                 {
-                    do
-                    {
-                        cout <<"NOVI ACCOUNT"<<endl;
-                        new_account(map_wallets);
-                        cout << "Ako zelite unjeti jos accouta unesite 1:\n";
-                        cin >> n;
-                    }while(n=='1');
-                    ispis_wallet(map_wallets);
-                    break;
-                }
-            case 2:
-                {
-                    do
-                    {
-                        cout <<"LOGIN"<<endl;
-                        login(vrh, map_wallets);
-                        cout << "Ako se zeli jos neko ulogirati nek unese 1:\n";
-                        cin >> n;
-                    }while(n=='1');
-                    ispis_wallet(map_wallets);
-                    break;
-                }
-            case 3:
+                    cout <<"NOVI ACCOUNT"<<endl;
+                    new_account(map_wallets);
+                    cout << "Ako zelite unjeti jos accouta unesite 1:\n";
+                    cin >> n;
+                }while(n=='1');
                 break;
+            }
+            case 2:
+            {
+                do
+                {
+                    cout <<"LOGIN"<<endl;
+                    username=login();
+                    do
+                    {
+                        fun_transaction(vrh, map_wallets, username);
+                        cout << "Ako zelite jos transakcija unesite 1:\n";
+                        cin >> n;
+                    }while(n=='1');
+                    cout << "Ako se zeli jos neko ulogirati nek unese 1:\n";
+                    cin >> n;
+                }while(n=='1');
+                break;
+            }
+            case 3:
+            {
+                cout <<"Unesi username walleta koji zelis azurirati: "<<endl;
+                username=login();
+                for(int i=0; i<vrh->transaction_vec.size(); i++)
+                {
+                    if(username==vrh->transaction_vec[i].to)
+                    {
+                        map_wallets[vrh->transaction_vec[i].to].balance+=vrh->transaction_vec[i].svota;
+                    }
+                    else if(username==vrh->transaction_vec[i].from)
+                    {
+                        map_wallets[vrh->transaction_vec[i].from].balance-=vrh->transaction_vec[i].svota;
+                    }
+                }
+                break;
+            }
+            case 4:
+            {
+                ispis_wallet(map_wallets);
+                break;
+            }
+            case 5:
+            {
+                username=login();
+                for(int i=0; i<vrh->transaction_vec.size(); i++)
+                {
+                    if(username==vrh->transaction_vec[i].to || username==vrh->transaction_vec[i].from)
+                    {
+                        vrh->transaction_vec[i].ptm=localtime(&(vrh->transaction_vec[i].timestamp));
+                        cout <<"Vrijeme: " << vrh->transaction_vec[i].ptm->tm_hour << ":" << vrh->transaction_vec[i].ptm->tm_min<< ":" << vrh->transaction_vec[i].ptm->tm_sec;
+                        cout << "\tDatum: " << (vrh->transaction_vec[i].ptm->tm_year+1900) << "-" << (vrh->transaction_vec[i].ptm->tm_mon+1) << "-" << vrh->transaction_vec[i].ptm->tm_mday<<"\t";
+                        std::cout <<"From " <<vrh->transaction_vec[i].from<<" to "<<vrh->transaction_vec[i].to<<" + "<<vrh->transaction_vec[i].svota;
+                        cout <<"\tHash transakcije: "<<vrh->transaction_vec[i].hash_transaction<<endl;
+                    }
+                }
+                break;
+            }
+            case 6:
+            {
+                ispis(vrh);
+                break;
+            }
+            case 7:
+            {
+                ispis_transakcija(vrh);
+                break;
+            }
             default:
-                cout <<"debilu unesi 1 ili 2"<<endl;
+                break;
         }
-        cout <<"Za novi account unesi 1, za login unesi 2, za kraj unesi 3: "<<endl;
-        cin >> acc_log;
-    }while(acc_log==1 || acc_log==2);
-
-    cin.ignore();
-
-    ispis(vrh);
-
-
-    cout <<"ISPIS TRANSAKCIJA"<<endl;
-    for(int i=0; i<vrh->transaction_vec.size(); i++)
-    {
-        vrh->transaction_vec[i].ptm=localtime(&(vrh->transaction_vec[i].timestamp));
-        cout <<"Vrijeme: " << vrh->transaction_vec[i].ptm->tm_hour << ":" << vrh->transaction_vec[i].ptm->tm_min<< ":" << vrh->transaction_vec[i].ptm->tm_sec;
-        cout << "\tDatum: " << (vrh->transaction_vec[i].ptm->tm_year+1900) << "-" << (vrh->transaction_vec[i].ptm->tm_mon+1) << "-" << vrh->transaction_vec[i].ptm->tm_mday<<"\t";
-        std::cout <<"From " <<vrh->transaction_vec[i].from<<" to "<<vrh->transaction_vec[i].to<<" + "<<vrh->transaction_vec[i].svota<<endl;
-    }
-
-    /*
-    do
-    {
-        promjena_bloka(vrh, provjera);
-        cout << "Ako ne zelite vise mjenjati podatke unesite 0: " <<endl;
-        cin >> n;
-    }while(n!=0);
-
-    ispis(vrh);
-    */
+    }while(acc_log==1 || acc_log==2 || acc_log==3 || acc_log==4 || acc_log==5 || acc_log==6 || acc_log==7 );
 
     return 0;
 }

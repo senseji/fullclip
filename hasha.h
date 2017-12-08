@@ -8,8 +8,6 @@
 #include <iomanip>
 #include <cstring>
 
-
-
 using namespace std;
 
 vector<unsigned long> convert_to_binary(const string);

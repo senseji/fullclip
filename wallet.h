@@ -18,6 +18,7 @@ public:
         double svota;
         time_t timestamp;
         struct tm *ptm;
+        string hash_transaction;
 };
 
 std::unordered_map<string,Wallets> new_wallet(string username,std::unordered_map<string,Wallets> &map_wallets);
@@ -26,15 +27,13 @@ void ispis_wallet(std::unordered_map<string,Wallets> map_wallets);
 
 std::unordered_map<string,Wallets> new_wallet(string username,std::unordered_map<string,Wallets> &map_wallets)
 {
-    double novac;
-
-    Wallets *wallet=new Wallets;
+    Wallets wallet;
 
     //wallet->id=i;
     cout <<"Unesite bitcoine: "<<endl;
-    cin>>wallet->balance;
+    cin>>wallet.balance;
     cout << endl;
-    map_wallets[username]=*wallet;
+    map_wallets[username]=wallet;
 
     return map_wallets;
 }

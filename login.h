@@ -2,9 +2,7 @@
 #define LOGIN_H_INCLUDED
 
 std::unordered_map<string,Wallets> new_account(std::unordered_map<string,Wallets> &map_wallets);
-void login(block* &vrh,std::unordered_map<string,Wallets> &map_wallets);
-
-static int brojac_vec=0;
+string login();
 
 std::unordered_map<string,Wallets> new_account(std::unordered_map<string,Wallets> &map_wallets)
 {
@@ -45,7 +43,7 @@ std::unordered_map<string,Wallets> new_account(std::unordered_map<string,Wallets
     return map_wallets;
 }
 
-void login(block* &vrh, std::unordered_map<string,Wallets> &map_wallets)
+string login()
 {
     string username, password,provjera_za_username,provjera_za_password;
     bool pro_login=false;
@@ -73,18 +71,11 @@ void login(block* &vrh, std::unordered_map<string,Wallets> &map_wallets)
             }
             else{pro_login=false;}
         }
-        if(pro_login==false){cout <<"Krivi username ili password!!!!"<<endl;}
+        if(pro_login==false){cout <<"Krivi username ili password"<<endl;}
     }while(pro_login==false);
     provjera_logina.close();
 
-    char n;
-    do
-    {
-        fun_transaction(vrh, map_wallets, username, brojac_vec);
-        brojac_vec++;
-        cout << "Ako zelite jos transakcija unesite 1:\n";
-        cin >> n;
-    }while(n=='1');
+    return username;
 }
 
 #endif // LOGIN_H_INCLUDED
