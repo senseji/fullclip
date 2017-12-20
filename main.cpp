@@ -1,123 +1,60 @@
-// id napraviti
-
+//time nije privatan
+//transakcije u poseban cpp i header
 #include <iostream>
-#include <stack>
-#include <string>
-#include <stdio.h>
 #include <time.h>
-#include <unordered_map>
-#include <fstream>
-#include "block.h"
-#include "wallet.h"
-#include "login.h"
+#include "blockchain.h"
 
 using namespace std;
 
-std::unordered_map<string,Wallets> map_wallets;
-std::stack<block> mystack;
+struct tm *ptm;
 
 int main()
 {
-    block *vrh = new block;
-    vrh->veza=NULL;
-    vrh->next=NULL;
-    vrh->r_br=0;
+    char odg='1';
+    string from, to;
+    int amount,counter=0, n=0;
 
-    bool provjera=true;
+    Blockchain FullCoin=Blockchain();
 
-    new_block(vrh, provjera, mystack);
-
-    char n;
-    int acc_log;
-    string username;
-
-    do
+    while(odg=='1')
     {
-    cout <<"\n1--Novi account\n2--Login\n3--Azuriranje walleta\n4--Ispis walleta\n5--Ispis mojih transakcija\n6--Ispis bloka\n7--Ispis svih transakcija\n8--EXIT\n"<<endl;
-    cin >> acc_log;
-        switch(acc_log)
+        cout <<"unesit od koga, kome i koliko: "<<endl;
+        cin >> from >> to >> amount;
+        FullCoin.chain[n].addTransaction(Transaction(from,to,amount));
+
+        counter++;
+        if(counter==2)
         {
-            case 1:
-            {
-                do
-                {
-                    cout <<"NOVI ACCOUNT"<<endl;
-                    new_account(map_wallets);
-                    cout << "Ako zelite unjeti jos accouta unesite 1:\n";
-                    cin >> n;
-                }while(n=='1');
-                break;
-            }
-            case 2:
-            {
-                do
-                {
-                    cout <<"LOGIN"<<endl;
-                    username=login();
-                    do
-                    {
-                        fun_transaction(vrh, map_wallets, username);
-                        cout << "Ako zelite jos transakcija unesite 1:\n";
-                        cin >> n;
-                    }while(n=='1');
-                    cout << "Ako se zeli jos neko ulogirati nek unese 1:\n";
-                    cin >> n;
-                }while(n=='1');
-                break;
-            }
-            case 3:
-            {
-                cout <<"Unesi username walleta koji zelis azurirati: "<<endl;
-                username=login();
-                for(int i=0; i<vrh->transaction_vec.size(); i++)
-                {
-                    if(username==vrh->transaction_vec[i].to)
-                    {
-                        map_wallets[vrh->transaction_vec[i].to].balance+=vrh->transaction_vec[i].svota;
-                    }
-                    else if(username==vrh->transaction_vec[i].from)
-                    {
-                        map_wallets[vrh->transaction_vec[i].from].balance-=vrh->transaction_vec[i].svota;
-                    }
-                }
-                break;
-            }
-            case 4:
-            {
-                ispis_wallet(map_wallets);
-                break;
-            }
-            case 5:
-            {
-                username=login();
-                for(int i=0; i<vrh->transaction_vec.size(); i++)
-                {
-                    if(username==vrh->transaction_vec[i].to || username==vrh->transaction_vec[i].from)
-                    {
-                        vrh->transaction_vec[i].ptm=localtime(&(vrh->transaction_vec[i].timestamp));
-                        cout <<"Vrijeme: " << vrh->transaction_vec[i].ptm->tm_hour << ":" << vrh->transaction_vec[i].ptm->tm_min<< ":" << vrh->transaction_vec[i].ptm->tm_sec;
-                        cout << "\tDatum: " << (vrh->transaction_vec[i].ptm->tm_year+1900) << "-" << (vrh->transaction_vec[i].ptm->tm_mon+1) << "-" << vrh->transaction_vec[i].ptm->tm_mday<<"\t";
-                        std::cout <<"From " <<vrh->transaction_vec[i].from<<" to "<<vrh->transaction_vec[i].to<<" + "<<vrh->transaction_vec[i].svota;
-                        cout <<"\tHash transakcije: "<<vrh->transaction_vec[i].hash_transaction<<endl;
-                    }
-                }
-                break;
-            }
-            case 6:
-            {
-                ispis(vrh);
-                break;
-            }
-            case 7:
-            {
-                ispis_transakcija(vrh);
-                break;
-            }
-            default:
-                break;
+            FullCoin.chain[n].MineBlock(FullCoin.getDifficulty());
+            cout <<"Mining..."<<endl;
+            FullCoin.addBlock(Block(n));
+            n++;
+            counter=0;
         }
-    }while(acc_log==1 || acc_log==2 || acc_log==3 || acc_log==4 || acc_log==5 || acc_log==6 || acc_log==7 );
+
+        cout <<"Ako zelis jos unesi 1: " <<endl;
+        cin >> odg;
+    }
+
+    for(int j=0; j<n+1; j++)
+    {
+        tm *ptm=localtime(&(FullCoin.chain[j]._time));
+        cout<<endl<<"Block " << j<<":"<<endl;
+        cout <<"TRANSAKCIJE:"<<endl;
+        for(int i=0; i<FullCoin.chain[j].getTransaction().size();i++)
+            {
+            cout <<"\t"<<FullCoin.chain[j].getTransaction()[i].getFrom();
+            cout <<"\t"<<FullCoin.chain[j].getTransaction()[i].getTo();
+            cout <<"\t"<<FullCoin.chain[j].getTransaction()[i].getAmount()<<endl;
+            }
+        cout <<"BLOCK:"<<endl;
+        cout <<"\tHahh: "<<FullCoin.chain[j].getHash()<<endl;
+        cout <<"\tRedni broj bloka: " << FullCoin.chain[j].getIndex() << endl;
+        cout <<"\tProšli hash: " << FullCoin.chain[j].prev_hash <<endl;
+        cout <<"\tNonce: " << FullCoin.chain[j].getNonce() <<endl;
+        cout <<"\tVrijeme bloka: " << ptm->tm_hour << ":" << ptm->tm_min<< ":" << ptm->tm_sec << endl;
+        cout <<"\tDatum: " << (ptm->tm_year+1900) << "-" << (ptm->tm_mon+1) << "-" << ptm->tm_mday << endl;
+    }
 
     return 0;
 }
-
