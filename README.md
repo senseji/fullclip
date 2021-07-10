@@ -1,1 +1,1 @@
-FULLCLIP COIN wallet
+#FULLCLIP COIN wallet
