@@ -1,2 +1,1 @@
-# lol
-xDDDDDDDDDDD
+FULLCLIP COIN wallet
